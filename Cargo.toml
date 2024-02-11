@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = [
+  "alkaline",
+  "alk",
+]
+
+
+[workspace.dependencies]
+anyhow = "1.0"
+chrono = "0.4"
+thiserror = "1.0"
+tracing = "0.1"
+async-trait = "0.1"
+tokio = "1.36"
