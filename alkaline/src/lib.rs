@@ -1,28 +1,13 @@
-pub mod error {
-    pub type Result<T, E = Error> = std::result::Result<T, E>;
-    #[derive(Debug, thiserror::Error)]
-    pub enum Error {
-        #[error(transparent)]
-        Other(anyhow::Error),
-    }
-}
-pub mod value {
-    /// Early limited dynamic value type.
-    pub enum Value {
-        Number(Number),
-    }
-    pub enum Number {
-        Integer(i64),
-        Float(f64),
-    }
-    pub struct Map;
-}
+pub mod error;
+pub mod value;
 pub mod schema {
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
     pub enum Schema {}
 }
 pub mod adapter {
     use crate::{
         error::Result,
+        query::Query,
         schema::Schema,
         value::{Map, Value},
     };
@@ -32,7 +17,7 @@ pub mod adapter {
     pub trait Adapter: Sized {
         async fn init(config: &Map) -> Self;
 
-        async fn read(&self, rows_buf: &mut Vec<Value>, query: &()) -> Result<()>;
+        async fn read(&self, rows_buf: &mut Vec<Value>, query: &Query) -> Result<()>;
 
         // TODO: impl.
         // async fn create();
@@ -51,8 +36,12 @@ pub mod adapter {
 pub mod query {
     use crate::value::Value;
 
-    pub struct Query {
-        selection: Value,
-        filters: (),
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+    pub enum Query {
+        Op { op: Op, value: Value },
+    }
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+    pub enum Op {
+        Eq,
     }
 }
