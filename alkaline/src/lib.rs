@@ -17,7 +17,9 @@ pub mod adapter {
     pub trait Adapter: Sized {
         async fn init(config: &Map) -> Self;
 
-        async fn read(&self, rows_buf: &mut Vec<Value>, query: &Query) -> Result<()>;
+        // NIT: I may regret MutRef here. Owning and returning may be better long term to not deal
+        // with lifecycle annoyances. We'll see.
+        async fn read<'a>(&self, rows_buf: &mut Vec<Value>, query: Query<'a>) -> Result<()>;
 
         // TODO: impl.
         // async fn create();
@@ -34,11 +36,23 @@ pub mod adapter {
     }
 }
 pub mod query {
+    use crate::{filter::Filter, select::Select};
+
+    pub struct Query<'a> {
+        pub select: &'a Select,
+        pub filter: &'a Filter,
+    }
+}
+pub mod select {
+    pub struct Select;
+}
+pub mod filter {
     use crate::value::Value;
 
     #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-    pub enum Query {
+    pub enum Filter {
         Op { op: Op, value: Value },
+        Fields(Vec<(Value, Filter)>),
     }
     #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
     pub enum Op {
