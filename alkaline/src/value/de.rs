@@ -1,8 +1,8 @@
 use super::{Number, Value};
 pub use crate::value::ser::Error;
-use serde::de::{self, DeserializeOwned};
+use serde::{de, Deserialize};
 
-pub fn from_value<T: DeserializeOwned>(value: Value) -> Result<T, Error> {
+pub fn from_value<'de, T: Deserialize<'de>>(value: Value) -> Result<T, Error> {
     T::deserialize(Deserializer(value))
 }
 
