@@ -4,6 +4,8 @@ use std::{
 };
 
 #[cfg(feature = "serde")]
+pub mod de;
+#[cfg(feature = "serde")]
 pub mod ser;
 
 /// Early limited dynamic value type.
@@ -17,6 +19,11 @@ impl From<i64> for Value {
         Self::Number(Number::Integer(v))
     }
 }
+impl From<f64> for Value {
+    fn from(v: f64) -> Self {
+        Self::Number(Number::Float(v.into()))
+    }
+}
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Number {
     Integer(i64),
@@ -28,6 +35,11 @@ pub enum Number {
 /// considered equal and less than numbers/etc, to allow ord to work.
 #[derive(Debug, Clone, Copy)]
 pub struct Float(f64);
+impl Float {
+    pub fn into_inner(self) -> f64 {
+        self.0
+    }
+}
 impl From<f64> for Float {
     fn from(value: f64) -> Self {
         Self(value)
