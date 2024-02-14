@@ -79,4 +79,5 @@ impl Ord for Float {
     }
 }
 
+#[derive(Debug, Default)]
 pub struct Map;
