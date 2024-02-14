@@ -2,7 +2,7 @@
 resolver = "2"
 members = [
   "alkaline",
-  "alk", "alkaline_markdown_adapter",
+  "alk",
 ]
 
 
@@ -16,3 +16,5 @@ tokio = "1.36"
 serde = "1.0"
 serde_json = "1.0"
 ron = "0.8"
+clap = { version = "4.5", features = ["derive", "env"] }
+tracing-subscriber = { version = "0.3", features = ["parking_lot", "env-filter"] }

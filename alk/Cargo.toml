@@ -6,3 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+alkaline = { path = "../alkaline" }
+alkaline_markdown_adapter = { path = "../markdown_adapter" }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+clap.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
