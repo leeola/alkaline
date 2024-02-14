@@ -3,10 +3,19 @@ use std::{
     hash::{Hash, Hasher},
 };
 
+#[cfg(feature = "serde")]
+pub mod ser;
+
 /// Early limited dynamic value type.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Value {
     Number(Number),
+}
+// TODO: macro these Froms.
+impl From<i64> for Value {
+    fn from(v: i64) -> Self {
+        Self::Number(Number::Integer(v))
+    }
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Number {

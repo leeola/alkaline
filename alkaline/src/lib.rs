@@ -13,6 +13,9 @@ pub mod adapter {
     };
     use async_trait::async_trait;
 
+    #[cfg(feature = "serde")]
+    pub mod serde_adapter;
+
     #[async_trait]
     pub trait Adapter: Sized {
         async fn init(config: &Map) -> Self;
@@ -38,13 +41,22 @@ pub mod adapter {
 pub mod query {
     use crate::{filter::Filter, select::Select};
 
+    #[derive(Debug)]
     pub struct Query<'a> {
         pub select: &'a Select,
         pub filter: &'a Filter,
     }
 }
 pub mod select {
-    pub struct Select;
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+    pub enum Select {
+        /// Select the whole value.
+        Value,
+        // /// Select
+        // Indexes(Vec<(usize, Select)>),
+        /// Select values corresponding to the given keys.
+        Keys(Vec<(String, Select)>),
+    }
 }
 pub mod filter {
     use crate::value::Value;
