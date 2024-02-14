@@ -1,12 +1,12 @@
 use super::{Number, Value};
-pub use crate::value::ser::serializer::Error;
+pub use crate::value::ser::Error;
 use serde::de::{self, DeserializeOwned};
 
 pub fn from_value<T: DeserializeOwned>(value: Value) -> Result<T, Error> {
     T::deserialize(Deserializer(value))
 }
 
-pub struct Deserializer(Value);
+struct Deserializer(Value);
 impl<'de> de::Deserializer<'de> for Deserializer {
     type Error = Error;
 
