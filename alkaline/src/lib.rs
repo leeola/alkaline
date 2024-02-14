@@ -5,6 +5,7 @@ pub mod schema {
     pub enum Schema {}
 }
 pub mod adapter;
+pub mod database;
 pub mod query {
     use crate::{filter::Filter, select::Select};
 

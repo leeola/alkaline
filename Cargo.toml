@@ -2,7 +2,7 @@
 resolver = "2"
 members = [
   "alkaline",
-  "alk",
+  "alk", "alkaline_markdown_adapter",
 ]
 
 
