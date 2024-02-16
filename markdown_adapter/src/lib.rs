@@ -1,14 +1,12 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+use alkaline::{adapter::Adapter, error::Result, query::Query, value::Value};
+use async_trait::async_trait;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub mod io;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+pub struct MarkdownAdapter;
+#[async_trait]
+impl Adapter for MarkdownAdapter {
+    async fn read<'a>(&self, _rows_buf: &mut Vec<Value>, _query: Query<'a>) -> Result<()> {
+        todo!()
     }
 }

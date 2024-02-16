@@ -2,6 +2,10 @@ use clap::Parser;
 use tracing::{info, metadata::LevelFilter, subscriber};
 use tracing_subscriber::EnvFilter;
 
+#[derive(Parser, Debug, Default)]
+#[command(author, version, about, long_about = None)]
+pub struct CliConfig {}
+
 #[tokio::main]
 async fn main() {
     // TODO: Move logging init to a core utility, for ease of test setup.
