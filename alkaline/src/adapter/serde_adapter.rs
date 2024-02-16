@@ -47,7 +47,9 @@ where
 /// (de)Serializable row types.
 #[derive(Debug)]
 pub struct Adapter<T, R> {
+    #[allow(unused)]
     adapter: T,
+    #[allow(unused)]
     read_buf: Vec<R>,
 }
 #[async_trait]
@@ -56,7 +58,7 @@ where
     T: SerdeAdapter<Read = R> + Sync,
     R: Send + Sync,
 {
-    async fn read<'a>(&self, rows_buf: &mut Vec<Value>, query: Query<'a>) -> Result<()> {
+    async fn read<'a>(&self, _rows_buf: &mut Vec<Value>, _query: Query<'a>) -> Result<()> {
         todo!()
     }
 }
