@@ -1,7 +1,9 @@
 [package]
 name = "alkaline_markdown_adapter"
 version = "0.1.0"
+authors = ["Lee Olayvar <leegit@fastmail.com>"]
 edition = "2021"
+license-file = "LICENSE"
 
 [dependencies]
 alkaline = { path = "../alkaline" }
