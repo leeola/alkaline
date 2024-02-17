@@ -4,8 +4,8 @@ members = [
   "alkaline",
   "alk",
   "markdown_adapter",
+  "smel",
 ]
-
 
 [workspace.dependencies]
 anyhow = "1.0"
