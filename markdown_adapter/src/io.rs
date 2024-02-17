@@ -28,9 +28,13 @@ pub mod mem {
                 .cloned()
                 .collect())
         }
-        async fn put(&self, key: String, mut read: impl AsyncRead + Send + Unpin) -> Result<usize> {
+        async fn put(
+            &self,
+            _key: String,
+            mut read: impl AsyncRead + Send + Unpin,
+        ) -> Result<usize> {
             let mut s_buf = String::new();
-            let foo = read.read_to_string(&mut s_buf).await;
+            let _foo = read.read_to_string(&mut s_buf).await;
             todo!()
         }
         async fn get(&self, _key: String) -> Result<Self::GetReader> {
