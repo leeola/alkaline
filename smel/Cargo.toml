@@ -1,5 +1,6 @@
 [package]
 name = "smel"
+description = "A Structured Markdown Editing interface and (eventually) Language."
 version = "0.1.0"
 authors = ["Lee Olayvar <leegit@fastmail.com>"]
 edition = "2021"
