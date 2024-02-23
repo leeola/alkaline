@@ -1,5 +1,8 @@
 //! A Structured Markdown Editing interface and (eventually) Language.
 
+pub mod structure;
+pub mod value;
+
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 #[derive(Debug, thiserror::Error)]
 pub enum Error {}
