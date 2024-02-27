@@ -9,11 +9,14 @@ pub enum Bind {
 /// instances of that pattern.
 pub enum Structure {
     /// The start of the document.
+    //
+    // NIT: Start/end need to be out of a nestable. ... or at least Start,
+    // since `Header, Start` doesn't make any sense. But `Header, End` does i suppose.
     Start,
     Header {
         level: u8,
         bind: Bind,
-        next: Option<Box<Structure>>,
+        inner: Option<Box<Structure>>,
     },
     /// A glob, matching any markdown nodes until the next structure.
     //
