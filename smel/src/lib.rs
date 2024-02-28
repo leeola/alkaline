@@ -1,5 +1,7 @@
 //! A Structured Markdown Editing interface and (eventually) Language.
 
+pub mod document;
+pub mod pattern;
 pub mod structure;
 pub mod value;
 
