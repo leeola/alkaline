@@ -1,4 +1,4 @@
-use crate::{pattern::Pattern, value::Value};
+use crate::{pattern::Pattern, structure::Structure, value::Value};
 use comrak::{arena_tree::Node, nodes::Ast};
 use std::cell::RefCell;
 
@@ -7,7 +7,9 @@ use std::cell::RefCell;
 /// Construct with `Arena::new()`.
 pub type Arena<'a> = comrak::Arena<Node<'a, RefCell<Ast>>>;
 
-pub struct Document {}
+pub struct Document {
+    structures: Vec<Structure>,
+}
 impl Document {
     pub fn new(arena: &Arena, pattern: Pattern, md: &str) -> Self {
         todo!()
