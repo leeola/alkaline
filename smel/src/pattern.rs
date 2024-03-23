@@ -1,10 +1,12 @@
+use compact_str::CompactString;
+
 /// An optional bind param for fields of a [`Structure`].
 #[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Bind {
     #[default]
     None,
-    Name(String),
-    OptionalName(String),
+    Name(CompactString),
+    OptionalName(CompactString),
 }
 
 #[derive(Debug, Default)]
@@ -17,6 +19,8 @@ pub enum Pattern {
 #[derive(Debug)]
 pub enum PatternBody {
     Header {
+        // TODO: Level should somehow be absolute or relative. To allow matching a header within
+        // another header.
         level: Option<u8>,
         bind: Bind,
         inner: Option<Box<PatternBody>>,

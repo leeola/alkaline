@@ -2,6 +2,7 @@
 
 pub mod document;
 pub mod pattern;
+pub mod pattern_match;
 pub mod structure;
 pub mod value;
 
