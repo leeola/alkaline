@@ -14,3 +14,4 @@ thiserror.workspace = true
 serde = { workspace = true, features = ["derive"] }
 ron = { workspace = true, optional = true }
 comrak = "0.21"
+compact_str = "0.7.1"
