@@ -1,18 +1,30 @@
-use crate::{pattern::Pattern, structure::Structure, value::Value};
-use comrak::{arena_tree::Node, nodes::Ast};
-use std::cell::RefCell;
+use crate::{
+    pattern::Pattern,
+    structure::{ComrakNode, Structure},
+};
+use comrak::ComrakOptions;
+use std::iter;
 
 /// A memory Arena for the internal markdown parser, [`comrak`].
 ///
 /// Construct with `Arena::new()`.
-pub type Arena<'a> = comrak::Arena<Node<'a, RefCell<Ast>>>;
+pub type Arena<'a> = comrak::Arena<ComrakNode<'a>>;
 
-pub struct Document {
-    structures: Vec<Structure>,
+#[allow(unused)]
+pub struct Document<'a> {
+    structures: Vec<Structure<'a>>,
 }
-impl Document {
-    pub fn new(arena: &Arena, pattern: Pattern, md: &str) -> Self {
-        todo!()
+impl<'a> Document<'a> {
+    pub fn new(arena: &'a Arena<'a>, pattern: Pattern, md: &str) -> Self {
+        let mut node = comrak::parse_document(arena, md, &ComrakOptions::default());
+        // NIT: Not sure how the AST parse will handle being left in a deep node.
+        let structures = iter::from_fn(move || {
+            let (structure, remaining) = Structure::new(&pattern, node);
+            node = remaining;
+            structure
+        })
+        .collect::<Vec<_>>();
+        Self { structures }
     }
     // pub fn iter() -> impl Iterator<Item = &Value> {
     //     todo!()
@@ -28,6 +40,14 @@ pub mod test {
     #[test]
     fn poc() {
         let arena = Arena::new();
-        let doc = Document::new(&arena, Pattern::default(), "");
+        let _doc = Document::new(
+            &arena,
+            Pattern::default(),
+            "\
+                # foo\n\
+                bar baz\n\
+                ## Bang\n\
+            ",
+        );
     }
 }
