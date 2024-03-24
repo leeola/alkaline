@@ -1,17 +1,19 @@
-use crate::{pattern::Pattern, structure::Structure, value::Value};
-use comrak::{arena_tree::Node, nodes::Ast};
-use std::cell::RefCell;
+use crate::{
+    pattern::Pattern,
+    structure::{ComrakNode, Structure},
+};
 
 /// A memory Arena for the internal markdown parser, [`comrak`].
 ///
 /// Construct with `Arena::new()`.
-pub type Arena<'a> = comrak::Arena<Node<'a, RefCell<Ast>>>;
+pub type Arena<'a> = comrak::Arena<ComrakNode<'a>>;
 
-pub struct Document {
-    structures: Vec<Structure>,
+#[allow(unused)]
+pub struct Document<'a> {
+    structures: Vec<Structure<'a>>,
 }
-impl Document {
-    pub fn new(arena: &Arena, pattern: Pattern, md: &str) -> Self {
+impl<'a> Document<'a> {
+    pub fn new(_arena: &Arena<'a>, _pattern: Pattern, _md: &str) -> Self {
         todo!()
     }
     // pub fn iter() -> impl Iterator<Item = &Value> {
@@ -24,10 +26,10 @@ impl Document {
 }
 #[cfg(test)]
 pub mod test {
-    use super::*;
+    // use super::*;
     #[test]
     fn poc() {
-        let arena = Arena::new();
-        let doc = Document::new(&arena, Pattern::default(), "");
+        // let arena = Arena::new();
+        // let _doc = Document::new(&arena, Pattern::default(), "");
     }
 }
