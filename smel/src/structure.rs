@@ -1,10 +1,12 @@
-use crate::pattern::{Bind, Pattern};
+use crate::pattern::{Bind, Pattern, PatternBody};
 use compact_str::CompactString;
-use std::{cell::RefCell, collections::HashMap, fmt};
+use comrak::nodes::NodeValue;
+use std::{cell::RefCell, fmt};
 
 pub type Field = CompactString;
 pub type Value = CompactString;
-pub type ComrakNode<'a> = comrak::arena_tree::Node<'a, RefCell<comrak::nodes::Ast>>;
+pub type ComrakNode<'a> = &'a comrak::arena_tree::Node<'a, RefCell<comrak::nodes::Ast>>;
+type StructureResult<'a> = (Option<Structure<'a>>, ComrakNode<'a>);
 
 /// The output of a [`Pattern`](crate::pattern::Pattern) onto a
 /// [`Document`](crate::document::Document).
@@ -14,12 +16,26 @@ pub struct Structure<'a> {
     //
     // Alternatively, the combination of the pattern + struct could handle creation. Bit awkward
     // tho.
-    _fields: HashMap<Field, Value>,
+    // _fields: HashMap<Field, Value>,
     node: Node<'a>,
 }
 impl<'a> Structure<'a> {
-    pub fn new(pattern: &Pattern, node: &'a ComrakNode<'a>) -> (Option<Self>, &'a ComrakNode<'a>) {
-        dbg!(pattern, node);
+    pub fn new(pattern: &Pattern, md_node: ComrakNode<'a>) -> StructureResult<'a> {
+        dbg!(pattern);
+        match pattern {
+            Pattern::Start(body) => Self::start(body, md_node),
+            Pattern::Body(body) => Self::body(body, md_node),
+        }
+    }
+    fn start(body: &PatternBody, cnode: ComrakNode<'a>) -> StructureResult<'a> {
+        if let NodeValue::Document = cnode.data.borrow().value {
+            // NIT: Assuming the rest of the nodes consume or always make progress, this func may
+            // need to make progress.
+            return (None, cnode);
+        }
+        Self::body(body, cnode)
+    }
+    fn body(body: &PatternBody, cnode: ComrakNode) -> StructureResult<'a> {
         todo!()
     }
 }

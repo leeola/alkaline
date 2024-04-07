@@ -8,20 +8,22 @@ pub enum Bind {
     Name(CompactString),
     OptionalName(CompactString),
 }
+impl From<&str> for Bind {
+    fn from(name: &str) -> Self {
+        Self::Name(name.into())
+    }
+}
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub enum Pattern {
     /// The start of the document.
-    #[default]
-    Start,
-    Node(PatternBody),
+    Start(PatternBody),
+    Body(PatternBody),
 }
 #[derive(Debug)]
 pub enum PatternBody {
     Header {
-        // TODO: Level should somehow be absolute or relative. To allow matching a header within
-        // another header.
-        level: Option<u8>,
+        level: Level,
         bind: Bind,
         inner: Option<Box<PatternBody>>,
     },
@@ -30,7 +32,13 @@ pub enum PatternBody {
     /// The end of the document.
     End,
 }
-
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub enum Level {
+    #[default]
+    None,
+    Absolute(u8),
+    Relative(i8),
+}
 #[cfg(test)]
 pub mod test {
     use comrak::{

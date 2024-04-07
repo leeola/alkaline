@@ -3,12 +3,12 @@ use crate::{
     structure::{ComrakNode, Structure},
 };
 use comrak::ComrakOptions;
-use std::iter;
+use std::{cell::RefCell, iter};
 
 /// A memory Arena for the internal markdown parser, [`comrak`].
 ///
 /// Construct with `Arena::new()`.
-pub type Arena<'a> = comrak::Arena<ComrakNode<'a>>;
+pub type Arena<'a> = comrak::Arena<comrak::arena_tree::Node<'a, RefCell<comrak::nodes::Ast>>>;
 
 #[allow(unused)]
 pub struct Document<'a> {
@@ -37,12 +37,17 @@ impl<'a> Document<'a> {
 #[cfg(test)]
 pub mod test {
     use super::*;
+    use crate::pattern::PatternBody;
     #[test]
     fn poc() {
         let arena = Arena::new();
         let _doc = Document::new(
             &arena,
-            Pattern::default(),
+            Pattern::Start(PatternBody::Header {
+                level: Default::default(),
+                bind: "foo".into(),
+                inner: None,
+            }),
             "\
                 # foo\n\
                 bar baz\n\
