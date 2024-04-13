@@ -17,7 +17,7 @@ pub struct Structure<'a> {
     // Alternatively, the combination of the pattern + struct could handle creation. Bit awkward
     // tho.
     // _fields: HashMap<Field, Value>,
-    node: Node<'a>,
+    _node: Node<'a>,
 }
 impl<'a> Structure<'a> {
     pub fn new(pattern: &Pattern, md_node: ComrakNode<'a>) -> StructureResult<'a> {
@@ -35,7 +35,7 @@ impl<'a> Structure<'a> {
         }
         Self::body(body, cnode)
     }
-    fn body(body: &PatternBody, cnode: ComrakNode) -> StructureResult<'a> {
+    fn body(_body: &PatternBody, _cnode: ComrakNode) -> StructureResult<'a> {
         todo!()
     }
 }

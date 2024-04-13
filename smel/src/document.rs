@@ -1,7 +1,4 @@
-use crate::{
-    pattern::Pattern,
-    structure::{ComrakNode, Structure},
-};
+use crate::{pattern::Pattern, structure::Structure};
 use comrak::ComrakOptions;
 use std::{cell::RefCell, iter};
 
