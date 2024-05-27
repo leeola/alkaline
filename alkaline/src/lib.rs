@@ -9,10 +9,10 @@ pub mod database;
 pub mod query {
     use crate::{filter::Filter, select::Select};
 
-    #[derive(Debug)]
-    pub struct Query<'a> {
-        pub select: &'a Select,
-        pub filter: &'a Filter,
+    #[derive(Debug, Clone)]
+    pub struct Query {
+        pub select: Select,
+        pub filter: Filter,
     }
 }
 pub mod select {

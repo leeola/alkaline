@@ -1,47 +1,44 @@
 use crate::{
-    error::Result,
+    error::{AdapterReadError, Result},
     query::Query,
-    schema::Schema,
     value::{Map, Value},
 };
 use async_trait::async_trait;
 use std::ops::Deref;
+use tokio_stream::Stream;
 
-#[cfg(feature = "serde")]
-pub mod serde_adapter;
+// Disable serde while i figure out new Adapters API.
+// #[cfg(feature = "serde")]
+// pub mod serde_adapter;
 
 /// A value that can initialize a new [`Adapter`]. Used to dynamically construct adapters from an
 /// adapter impl registry based on the given database schema.
 #[async_trait]
 pub trait Init: Send + Sync {
-    /// Initialize a new adapter impl.
+    /// Initialize a new adapter impl, returning the associated header information for this.
     async fn init_adapter(&self, config: &Map) -> Result<Box<dyn Adapter>>;
 }
 
+// TODO: Return header/metadata about the name, capabilities, consistency of schema and etc of an
+// Adapter.
+
 #[async_trait]
 pub trait Adapter: Send + Sync {
-    // NIT: I may regret MutRef here. Owning and returning may be better long term to not deal
-    // with lifecycle annoyances. We'll see.
-    async fn read<'a>(&self, rows_buf: &mut Vec<Value>, query: Query<'a>) -> Result<()>;
+    // TODO: impl a mechanism to indicate if the query select, filter and ord were honored. It would
+    // be nice to let them optionally not honor those values.
+    fn read(&self, query: Query) -> Box<dyn Stream<Item = Result<Value, AdapterReadError>>>;
 
     // TODO: impl.
     // async fn create();
     // async fn update();
     // async fn delete();
-
-    // NIT: Probably better to return a paths of what is mutable?
-    async fn mutable(&self) -> bool {
-        false
-    }
-    async fn schema(&self) -> Option<Schema> {
-        None
-    }
+    // async fn schema()
 }
 
 #[async_trait]
 impl Adapter for Box<dyn Adapter> {
-    async fn read<'a>(&self, rows_buf: &mut Vec<Value>, query: Query<'a>) -> Result<()> {
-        self.deref().read(rows_buf, query).await
+    fn read(&self, query: Query) -> Box<dyn Stream<Item = Result<Value, AdapterReadError>>> {
+        self.deref().read(query)
     }
 }
 
