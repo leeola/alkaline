@@ -7,9 +7,8 @@ use async_trait::async_trait;
 use std::ops::Deref;
 use tokio_stream::Stream;
 
-// Disable serde while i figure out new Adapters API.
-// #[cfg(feature = "serde")]
-// pub mod serde_adapter;
+#[cfg(feature = "serde")]
+pub mod serde_adapter;
 
 /// A value that can initialize a new [`Adapter`]. Used to dynamically construct adapters from an
 /// adapter impl registry based on the given database schema.
@@ -26,7 +25,7 @@ pub trait Init: Send + Sync {
 pub trait Adapter: Send + Sync {
     // TODO: impl a mechanism to indicate if the query select, filter and ord were honored. It would
     // be nice to let them optionally not honor those values.
-    fn read(&self, query: Query) -> Box<dyn Stream<Item = Result<Value, AdapterReadError>>>;
+    fn read(&self, query: Query) -> Box<dyn Stream<Item = Result<Value, AdapterReadError>> + '_>;
 
     // TODO: impl.
     // async fn create();
@@ -37,7 +36,7 @@ pub trait Adapter: Send + Sync {
 
 #[async_trait]
 impl Adapter for Box<dyn Adapter> {
-    fn read(&self, query: Query) -> Box<dyn Stream<Item = Result<Value, AdapterReadError>>> {
+    fn read(&self, query: Query) -> Box<dyn Stream<Item = Result<Value, AdapterReadError>> + '_> {
         self.deref().read(query)
     }
 }

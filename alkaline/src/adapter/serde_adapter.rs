@@ -1,10 +1,11 @@
 use crate::{
-    error::Result,
+    error::{AdapterReadError, Result},
     query::Query,
-    value::{de::from_value, Map, Value},
+    value::{de::from_value, ser::to_value, Map, Value},
 };
 use async_trait::async_trait;
 use serde::{de::DeserializeOwned, Serialize};
+use tokio_stream::{Stream, StreamExt};
 
 #[async_trait]
 pub trait SerdeInit: Send + Sync {
@@ -15,8 +16,7 @@ pub trait SerdeInit: Send + Sync {
 #[async_trait]
 pub trait SerdeAdapter: Send + Sync + 'static {
     type Read: Serialize + DeserializeOwned + Send + Sync;
-    async fn read<'a>(&self, rows_buf: &mut Vec<Self::Read>, query: Query<'a>) -> Result<()>;
-    // async fn update<'a>(&self, rows_buf: Vec<Self::Row>) -> Result<()>;
+    fn read(&self, query: Query) -> impl Stream<Item = Result<Self::Read, AdapterReadError>>;
 }
 
 /// A provider of [`Init`](super::Init) for the [`SerdeInit`] trait, where the inner `T`
@@ -28,7 +28,7 @@ impl<I, A, R> super::Init for Init<I>
 where
     I: SerdeInit<Adapter = A>,
     A: SerdeAdapter<Read = R> + Sync,
-    R: Send + Sync + 'static,
+    R: Serialize + Send + Sync + 'static,
 {
     async fn init_adapter(&self, _config: &Map) -> Result<Box<dyn super::Adapter>> {
         // NIT: Pretend the 5 value is a config.. lol, until Map gets added to Value.
@@ -56,10 +56,14 @@ pub struct Adapter<T, R> {
 impl<T, R> super::Adapter for Adapter<T, R>
 where
     T: SerdeAdapter<Read = R> + Sync,
-    R: Send + Sync,
+    R: Serialize + Send + Sync + 'static,
 {
-    async fn read<'a>(&self, _rows_buf: &mut Vec<Value>, _query: Query<'a>) -> Result<()> {
-        todo!()
+    fn read(&self, query: Query) -> Box<dyn Stream<Item = Result<Value, AdapterReadError>> + '_> {
+        Box::new(
+            self.adapter
+                .read(query)
+                .map(|res| res.map(|r| to_value(r).unwrap())),
+        )
     }
 }
 
@@ -81,16 +85,18 @@ pub mod test {
     #[async_trait]
     impl SerdeAdapter for TestAdapter {
         type Read = SomeRow;
-        async fn read<'a>(&self, rows_buf: &mut Vec<Self::Read>, _query: Query<'a>) -> Result<()> {
-            rows_buf.push(SomeRow {
-                name: "foo".into(),
-                age: 200,
-            });
-            rows_buf.push(SomeRow {
-                name: "bar".into(),
-                age: 400,
-            });
-            Ok(())
+        fn read(&self, _query: Query) -> impl Stream<Item = Result<Self::Read, AdapterReadError>> {
+            tokio_stream::iter(vec![
+                SomeRow {
+                    name: "foo".into(),
+                    age: 200,
+                },
+                SomeRow {
+                    name: "bar".into(),
+                    age: 400,
+                },
+            ])
+            .map(Ok)
         }
     }
     #[derive(Serialize, Deserialize)]
