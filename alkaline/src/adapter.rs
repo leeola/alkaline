@@ -7,6 +7,7 @@ use async_trait::async_trait;
 use std::ops::Deref;
 use tokio_stream::Stream;
 
+pub mod once_value;
 #[cfg(feature = "serde")]
 pub mod serde_adapter;
 
