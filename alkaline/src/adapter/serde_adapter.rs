@@ -1,7 +1,7 @@
 use crate::{
     error::{AdapterReadError, Result},
     query::Query,
-    value::{de::from_value, ser::to_value, Map, Value},
+    value::{de::from_value, ser::to_value, Value},
 };
 use async_trait::async_trait;
 use serde::{de::DeserializeOwned, Serialize};
@@ -11,7 +11,7 @@ use tokio_stream::{Stream, StreamExt};
 pub trait SerdeInit: Send + Sync {
     type Adapter: SerdeAdapter;
     type Config: Serialize + DeserializeOwned + Send + Sync;
-    async fn init_adapter(&self, config: &Self::Config) -> Result<Self::Adapter>;
+    async fn init_adapter(&self, config: Self::Config) -> Result<Self::Adapter>;
 }
 #[async_trait]
 pub trait SerdeAdapter: Send + Sync + 'static {
@@ -30,11 +30,11 @@ where
     A: SerdeAdapter<Read = R> + Sync,
     R: Serialize + Send + Sync + 'static,
 {
-    async fn init_adapter(&self, _config: &Map) -> Result<Box<dyn super::Adapter>> {
+    async fn init_adapter(&self, _config: Value) -> Result<Box<dyn super::Adapter>> {
         // NIT: Pretend the 5 value is a config.. lol, until Map gets added to Value.
         // let config = from_value::<T::Config>(config.clone().into());
         let config = from_value::<I::Config>(5.into()).unwrap();
-        let adapter = self.0.init_adapter(&config).await?;
+        let adapter = self.0.init_adapter(config).await?;
         Ok(Box::new(Adapter {
             adapter,
             read_buf: Default::default(),
@@ -77,7 +77,7 @@ pub mod test {
     impl SerdeInit for TestInit {
         type Adapter = TestAdapter;
         type Config = ();
-        async fn init_adapter(&self, _: &Self::Config) -> Result<Self::Adapter> {
+        async fn init_adapter(&self, _: Self::Config) -> Result<Self::Adapter> {
             Ok(TestAdapter)
         }
     }
@@ -108,6 +108,6 @@ pub mod test {
     async fn _binding_sanity_check() {
         let init: Box<dyn crate::adapter::Init> = Box::new(Init(TestInit));
         let _: Result<Box<dyn crate::adapter::Adapter>, _> =
-            init.init_adapter(&Default::default()).await;
+            init.init_adapter(Default::default()).await;
     }
 }

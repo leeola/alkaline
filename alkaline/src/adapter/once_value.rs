@@ -2,7 +2,7 @@ use super::{Adapter, Init};
 use crate::{
     error::{AdapterReadError, Result},
     query::Query,
-    value::{Map, Value},
+    value::Value,
 };
 use async_trait::async_trait;
 use tokio_stream::Stream;
@@ -10,7 +10,7 @@ use tokio_stream::Stream;
 pub struct OnceValueInit;
 #[async_trait]
 impl Init for OnceValueInit {
-    async fn init_adapter(&self, _config: &Map) -> Result<Box<dyn Adapter>> {
+    async fn init_adapter(&self, _config: Value) -> Result<Box<dyn Adapter>> {
         // TODO: convert the map to a general value i suspect? Requiring a map seems restrictive
         // for a flexible adapter init.
 

@@ -1,7 +1,7 @@
 use crate::{
     error::{AdapterReadError, Result},
     query::Query,
-    value::{Map, Value},
+    value::Value,
 };
 use async_trait::async_trait;
 use std::ops::Deref;
@@ -16,7 +16,7 @@ pub mod serde_adapter;
 #[async_trait]
 pub trait Init: Send + Sync {
     /// Initialize a new adapter impl, returning the associated header information for this.
-    async fn init_adapter(&self, config: &Map) -> Result<Box<dyn Adapter>>;
+    async fn init_adapter(&self, config: Value) -> Result<Box<dyn Adapter>>;
 }
 
 // TODO: Return header/metadata about the name, capabilities, consistency of schema and etc of an
