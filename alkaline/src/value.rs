@@ -9,8 +9,10 @@ pub mod de;
 pub mod ser;
 
 /// Early limited dynamic value type.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Value {
+    #[default]
+    None,
     Number(Number),
 }
 // TODO: macro these Froms.

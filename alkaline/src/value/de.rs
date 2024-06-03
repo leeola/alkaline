@@ -15,6 +15,7 @@ impl<'de> de::Deserializer<'de> for Deserializer {
         V: de::Visitor<'de>,
     {
         match self.0 {
+            Value::None => visitor.visit_none(),
             Value::Number(Number::Integer(v)) => visitor.visit_i64(v),
             Value::Number(Number::Float(v)) => visitor.visit_f64(v.into_inner()),
         }
