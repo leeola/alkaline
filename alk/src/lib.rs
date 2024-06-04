@@ -23,7 +23,7 @@ mod log {
 }
 pub mod config {
     use crate::log::LogConfig;
-    use alkaline::storage::{memory::Memory, Storage};
+    use alkaline::storage::{memory::MemoryDb, DatabaseStorage};
     use clap::Parser;
 
     #[derive(Parser, Debug, Default)]
@@ -39,8 +39,8 @@ pub mod config {
     #[derive(Parser, Debug, Default, Clone)]
     pub struct StorageConfig {}
     impl StorageConfig {
-        pub fn storage(&self) -> Box<dyn Storage> {
-            Box::<Memory>::default()
+        pub fn storage(&self) -> Box<dyn DatabaseStorage> {
+            Box::<MemoryDb>::default()
         }
     }
 }
