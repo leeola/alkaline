@@ -10,12 +10,8 @@ use tokio_stream::Stream;
 pub struct OnceValueInit;
 #[async_trait]
 impl Init for OnceValueInit {
-    async fn init_adapter(&self, _config: Value) -> Result<Box<dyn Adapter>> {
-        // TODO: convert the map to a general value i suspect? Requiring a map seems restrictive
-        // for a flexible adapter init.
-
-        // faking a value until the config is converted.
-        Ok(Box::new(OnceValue(0xBEEF.into())))
+    async fn init_adapter(&self, config: Value) -> Result<Box<dyn Adapter>> {
+        Ok(Box::new(OnceValue(config)))
     }
 }
 
