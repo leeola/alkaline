@@ -1,42 +1,45 @@
-use crate::{
-    adapter,
-    storage::{memory::MemoryPersist, Persist},
-};
+use crate::{adapter, error::Result};
 use async_trait::async_trait;
-use std::ops::DerefMut;
+use std::ops::{Deref, DerefMut};
 
 // pub mod server {}
 // pub mod conn {}
 pub mod local {
     use super::{Connection, Registry};
-    use crate::{adapter, storage::DatabaseStorage};
+    use crate::{adapter, error::Result};
     use async_trait::async_trait;
 
-    pub struct Local {
+    pub struct Local<S> {
         #[allow(unused)]
-        storage: Box<dyn DatabaseStorage>,
+        storage: S,
     }
-    impl Local {
-        pub fn new(storage: Box<dyn DatabaseStorage>) -> Self {
+    impl<S> Local<S> {
+        pub fn new(storage: S) -> Self {
             Self { storage }
         }
-        #[cfg(test)]
+    }
+    #[cfg(test)]
+    impl Local<crate::storage::memory::MemoryDb> {
         pub fn test() -> Self {
-            Self::new(Box::<crate::storage::memory::MemoryDb>::default())
-        }
-        /// Register an adapter.
-        pub fn register<T>(&mut self) {
-            todo!()
+            #[allow(clippy::default_constructed_unit_structs)]
+            Self::new(crate::storage::memory::MemoryDb::default())
         }
     }
     #[async_trait]
-    impl Registry for Local {
+    impl<S> Registry for Local<S> {
         fn register<T: adapter::Init>(&mut self) {
             todo!()
         }
     }
     #[async_trait]
-    impl Connection for Local {}
+    impl<S> Connection for Local<S>
+    where
+        S: Send + Sync,
+    {
+        async fn databases(&self) -> Result<Vec<String>> {
+            todo!()
+        }
+    }
 }
 
 #[async_trait]
@@ -53,34 +56,49 @@ where
 }
 
 #[async_trait]
-pub trait Connection {}
+pub trait Connection: Send + Sync {
+    async fn databases(&self) -> Result<Vec<String>>;
+}
 #[async_trait]
-impl<T> Connection for Box<T> where T: Connection {}
+impl<T> Connection for Box<T>
+where
+    T: Connection,
+{
+    async fn databases(&self) -> Result<Vec<String>> {
+        self.deref().databases().await
+    }
+}
 
-pub struct Alkaline<C = Box<dyn Connection>, P = Box<dyn Persist>> {
+pub struct Alkaline<C = Box<dyn Connection>> {
+    #[allow(unused)]
+    active_database: Option<String>,
     conn: C,
-    persist: P,
 }
 impl<C> Alkaline<C> {
     pub fn new(conn: C) -> Self {
         Self {
             conn,
-            persist: Box::<MemoryPersist>::default(),
+            active_database: Default::default(),
         }
     }
 }
+impl<C> Alkaline<C>
+where
+    C: Connection,
+{
+    pub async fn databases(&self) -> Result<Vec<String>> {
+        self.conn.databases().await
+    }
+}
 #[cfg(test)]
-impl Alkaline<local::Local, MemoryPersist> {
+impl Alkaline<local::Local<crate::storage::memory::MemoryDb>> {
     pub fn test() -> Self {
-        Self {
-            conn: local::Local::test(),
-            persist: MemoryPersist::default(),
-        }
+        Self::new(local::Local::test())
     }
 }
 
 #[async_trait]
-impl<C, S> Registry for Alkaline<C, S>
+impl<C> Registry for Alkaline<C>
 where
     C: Registry,
 {

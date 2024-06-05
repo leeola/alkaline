@@ -23,7 +23,10 @@ mod log {
 }
 pub mod config {
     use crate::log::LogConfig;
-    use alkaline::storage::{memory::MemoryDb, DatabaseStorage};
+    use alkaline::{
+        alkaline::{local::Local, Alkaline, Connection},
+        storage::{memory::MemoryDb, DatabaseStorage},
+    };
     use clap::Parser;
 
     #[derive(Parser, Debug, Default)]
@@ -34,6 +37,12 @@ pub mod config {
         #[command(flatten)]
         pub storage: StorageConfig,
         pub expr: Option<String>,
+    }
+    impl Cli {
+        pub fn alkaline(&self) -> Alkaline {
+            let conn: Box<dyn Connection> = Box::new(Local::new(Box::<MemoryDb>::default()));
+            Alkaline::new(conn)
+        }
     }
 
     #[derive(Parser, Debug, Default, Clone)]
