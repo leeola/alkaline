@@ -1,4 +1,8 @@
-use crate::{adapter, error::Result};
+use crate::{
+    adapter,
+    error::{Error, Result},
+    statement::Statement,
+};
 use async_trait::async_trait;
 use std::ops::{Deref, DerefMut};
 
@@ -55,6 +59,9 @@ where
     }
 }
 
+/// The primary behavior impl of local or remote alkaline impls.
+///
+/// This impl is largely stateless,
 #[async_trait]
 pub trait Connection: Send + Sync {
     async fn databases(&self) -> Result<Vec<String>>;
@@ -69,6 +76,8 @@ where
     }
 }
 
+/// A stateful client over an underlying alkaline [`Connection`], tracking active database, partial
+/// adapter, etc.
 pub struct Alkaline<C = Box<dyn Connection>> {
     #[allow(unused)]
     active_database: Option<String>,
@@ -80,6 +89,12 @@ impl<C> Alkaline<C> {
             conn,
             active_database: Default::default(),
         }
+    }
+    pub async fn statement(&mut self, _stmt: impl Into<Statement>) -> Result<(), Error> {
+        todo!()
+    }
+    pub async fn query(&mut self, _query: impl Into<Statement>) -> Result<(), Error> {
+        todo!()
     }
 }
 impl<C> Alkaline<C>

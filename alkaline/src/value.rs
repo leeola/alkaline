@@ -1,3 +1,5 @@
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 use std::{
     cmp::Ordering,
     hash::{Hash, Hasher},
@@ -9,11 +11,23 @@ pub mod de;
 pub mod ser;
 
 /// Early limited dynamic value type.
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Value {
     #[default]
     None,
     Number(Number),
+}
+impl<T> From<Option<T>> for Value
+where
+    T: Into<Value>,
+{
+    fn from(value: Option<T>) -> Self {
+        match value {
+            Some(t) => t.into(),
+            None => Self::None,
+        }
+    }
 }
 // TODO: macro these Froms.
 impl From<i64> for Value {
@@ -26,6 +40,7 @@ impl From<f64> for Value {
         Self::Number(Number::Float(v.into()))
     }
 }
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Number {
     Integer(i64),
@@ -35,6 +50,7 @@ pub enum Number {
 ///
 /// Note that the inner value _can_ be NaN/Inf (though Ron's says it cannot be), but NaN/Inf are
 /// considered equal and less than numbers/etc, to allow ord to work.
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Copy)]
 pub struct Float(f64);
 impl Float {

@@ -24,7 +24,7 @@ mod log {
 pub mod config {
     use crate::log::LogConfig;
     use alkaline::{
-        alkaline::{local::Local, Alkaline, Connection},
+        client::{local::Local, Alkaline, Connection},
         storage::{memory::MemoryDb, DatabaseStorage},
     };
     use clap::Parser;

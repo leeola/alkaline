@@ -26,6 +26,9 @@ pub trait Init: Send + Sync {
 pub trait Adapter: Send + Sync {
     // TODO: impl a mechanism to indicate if the query select, filter and ord were honored. It would
     // be nice to let them optionally not honor those values.
+    //
+    // TODO: Refactor Query to AdapterQuery, as i suspect it'll be a slice of the input query that
+    // corresponds to this adapter, along with
     fn read(&self, query: Query) -> Box<dyn Stream<Item = Result<Value, AdapterReadError>> + '_>;
 
     // TODO: impl.
