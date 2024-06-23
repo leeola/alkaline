@@ -6,10 +6,7 @@ edition = "2021"
 license-file = "LICENSE"
 
 [features]
-default = ["serde", "toml_ql"]
-# Include the ability to construct statements and queries from toml.
-# (primarily just a temporary way to write dynamic queries until alk_ql)
-toml_ql = ["toml", "serde"]
+default = ["serde"]
 # include example data adapters
 example_data = []
 
@@ -23,7 +20,6 @@ async-trait.workspace = true
 serde = { workspace = true, optional = true, features = ["derive"] }
 ron = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
-toml = { version = "0.8", optional = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["test-util", "macros"] }

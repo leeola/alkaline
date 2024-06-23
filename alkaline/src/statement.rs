@@ -2,14 +2,9 @@ use self::query::Query;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-#[cfg(feature = "toml_ql")]
-pub mod toml_ql;
-
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone)]
 pub enum Statement {
-    Show(Show),
-    Create(Create),
     Query(Query),
 }
 impl From<Query> for Statement {
@@ -18,29 +13,13 @@ impl From<Query> for Statement {
     }
 }
 
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum Show {
-    Databases,
-}
-
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum Create {
-    Database {
-        name: String,
-        /// A connection profile for this database to use.
-        connection: String,
-    },
-}
-
 pub mod query {
     use crate::value::Value;
     #[cfg(feature = "serde")]
     use serde::{Deserialize, Serialize};
 
     #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    #[derive(Debug, Clone)]
     pub struct Query {
         from: QueryFrom,
         selected_cols: Vec<String>,
@@ -63,7 +42,7 @@ pub mod query {
         }
     }
     #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    #[derive(Debug, Clone)]
     struct QueryFrom {
         name: String,
         args: Value,
