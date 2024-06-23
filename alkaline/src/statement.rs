@@ -5,12 +5,19 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone)]
 pub enum Statement {
+    Create(Create),
     Query(Query),
 }
 impl From<Query> for Statement {
     fn from(q: Query) -> Self {
         Self::Query(q)
     }
+}
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Clone)]
+pub enum Create {
+    Database { name: String },
 }
 
 pub mod query {

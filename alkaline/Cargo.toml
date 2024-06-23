@@ -6,7 +6,8 @@ edition = "2021"
 license-file = "LICENSE"
 
 [features]
-default = ["serde"]
+default = ["serde", "ron_ql"]
+ron_ql = ["ron"]
 # include example data adapters
 example_data = []
 

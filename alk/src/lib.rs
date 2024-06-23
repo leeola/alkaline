@@ -24,7 +24,8 @@ mod log {
 pub mod config {
     use crate::log::LogConfig;
     use alkaline::{
-        client::{local::Local, Alkaline, Connection},
+        backend::{ephemeral_reference::EphemeralReferenceBackend, Connection},
+        client::Alkaline,
         storage::{memory::MemoryDb, DatabaseStorage},
     };
     use clap::Parser;
@@ -39,8 +40,12 @@ pub mod config {
         pub expr: Option<String>,
     }
     impl Cli {
+        pub fn connection(&self) -> Box<dyn Connection> {
+            // TODO: config for persist vs ephem impl
+            Box::new(EphemeralReferenceBackend::new())
+        }
         pub fn alkaline(&self) -> Alkaline {
-            let conn: Box<dyn Connection> = Box::new(Local::new(Box::<MemoryDb>::default()));
+            let conn = self.connection();
             Alkaline::new(conn)
         }
     }

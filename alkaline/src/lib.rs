@@ -4,6 +4,8 @@ pub mod schema {
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
     pub enum Schema {}
 }
+pub mod backend;
+pub use client::Alkaline;
 pub mod adapter;
 pub mod client;
 pub mod database;
