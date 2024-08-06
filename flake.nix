@@ -17,7 +17,7 @@
         };
       in
       {
-        devShell = pkgs.mkShell {
+        devShell = pkgs.mkShell rec {
           buildInputs = with pkgs; [
             pkg-config
             binutils
@@ -27,6 +27,8 @@
             rust-bin.nightly."2024-06-25".rustfmt
             rust-toolchain
           ];
+
+          LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath buildInputs;
         };
       }
     );

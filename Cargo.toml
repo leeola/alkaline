@@ -3,6 +3,7 @@ resolver = "2"
 members = [
   "alkaline",
   "alk",
+  "alk_iced",
 ]
 
 [workspace.dependencies]
