@@ -17,7 +17,7 @@
         };
       in
       {
-        devShell = pkgs.mkShell {
+        devShell = pkgs.mkShell rec {
           buildInputs = with pkgs; [
             pkg-config
             binutils
@@ -26,7 +26,22 @@
             # using a hardcoded rustfmt version to support nightly rustfmt features.
             rust-bin.nightly."2024-06-25".rustfmt
             rust-toolchain
+
+            # Some dependencies needed for GPUI examples. Found through dumb trial and error.
+            clang
+            mold
+            cmake
+            openssl
+            xorg.libxcb
+            libxkbcommon
+            vulkan-headers
+            vulkan-loader
+            vulkan-tools
+            vulkan-validation-layers
           ];
+
+          # Seems necessary to make libxcb found. Again for GPUI.
+          LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath buildInputs;
         };
       }
     );
