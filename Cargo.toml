@@ -2,7 +2,7 @@
 resolver = "2"
 members = [
   "alkaline",
-  "alk",
+  "alk", "alk_gpui",
 ]
 
 [workspace.dependencies]
