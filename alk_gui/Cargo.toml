@@ -1,0 +1,19 @@
+[package]
+name = "alk_gui"
+version = "0.1.0"
+authors = ["Lee Olayvar <leegit@fastmail.com>"]
+edition = "2021"
+license-file = "LICENSE"
+
+[lib]
+name = "alk_gui"
+path = "src/lib.rs"
+
+[[bin]]
+name = "alk-gui"
+path = "src/bin/alk_gui.rs"
+
+[dependencies]
+alkaline = { path = "../alkaline" }
+tracing.workspace = true
+iced = "0.13"
