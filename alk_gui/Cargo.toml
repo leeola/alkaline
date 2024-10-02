@@ -17,3 +17,5 @@ path = "src/bin/alk_gui.rs"
 alkaline = { path = "../alkaline" }
 tracing.workspace = true
 iced = "0.13"
+# Temporary dep, while i explore type conversion.
+serde_json.workspace = true

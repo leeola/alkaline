@@ -3,6 +3,16 @@ use iced::{
     Center,
 };
 
+pub mod value {
+
+    pub mod from_json {}
+
+    pub enum Value {
+        Row,
+        Col,
+    }
+}
+
 // TODO: Make this entry less main-y and more pluggable, for use in `alk gui` and `alk_gui`. Not
 // yet sure how to do that with Iced.
 pub fn main() -> iced::Result {
